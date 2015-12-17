@@ -1,0 +1,46 @@
+{
+  "name": "moxios",
+  "version": "1.0.0",
+  "description": "Mock implementation of the popular axios library",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine && karma start",
+    "test:watch": "karma start --autoWatch=true --singleRun=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mwinche/moxios.git"
+  },
+  "keywords": [
+    "moxios",
+    "mock",
+    "axios",
+    "http",
+    "stub",
+    "testing",
+    "spy",
+    "spies",
+    "https",
+    "testing"
+  ],
+  "author": "Matt Winchester",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mwinche/moxios/issues"
+  },
+  "homepage": "https://github.com/mwinche/moxios#readme",
+  "devDependencies": {
+    "eslint": "1.10.3",
+    "ghooks": "1.0.1",
+    "jasmine": "2.4.1",
+    "jasmine-core": "2.4.1",
+    "karma": "0.13.15",
+    "karma-chrome-launcher": "0.2.2",
+    "karma-cli": "0.1.1",
+    "karma-coverage": "0.5.3",
+    "karma-jasmine": "0.3.6",
+    "karma-sourcemap-loader": "0.3.6",
+    "karma-webpack": "1.7.0",
+    "webpack": "1.12.9"
+  }
+}
