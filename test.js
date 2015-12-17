@@ -490,5 +490,40 @@ describe('moxios', function(){
 
         ,done);
     });
+
+    it('should work for all instance methods', function(done){
+      mock.when(function(config){
+        return config.method;
+      });
+
+      var instance = mock.axios.create();
+
+      var promises = [
+        instance.request({url:'/', method:'get'}),
+        instance.get('/'),
+        instance.delete('/'),
+        instance.head('/'),
+        instance.post('/'),
+        instance.put('/'),
+        instance.patch('/')
+      ];
+
+      verifyNotRejected(
+        Promise.all(promises)
+          .then(function(values){
+            expect(values).toEqual([
+              'get',
+              'get',
+              'delete',
+              'head',
+              'post',
+              'put',
+              'patch'
+            ]);
+            done();
+          })
+
+        ,done);
+    });
   });
 });
