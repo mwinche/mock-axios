@@ -457,4 +457,38 @@ describe('moxios', function(){
         ,done);
     });
   });
+
+  describe('instance support', function(){
+    it('should match against instances as well', function(done){
+      mock.when.get('/url').return('foo');
+
+      var instance = mock.axios.create();
+
+      verifyNotRejected(
+        instance.get('/url')
+          .then(function(value){
+            expect(value).toBe('foo');
+            done();
+          })
+
+        ,done);
+    });
+
+    it('should take a config at instance creation', function(done){
+      mock.when(function(config){
+        return config;
+      });
+
+      var instance = mock.axios.create({foo:'bar'});
+
+      verifyNotRejected(
+        instance.get('/')
+          .then(function(value){
+            expect(value.foo).toBe('bar');
+            done();
+          })
+
+        ,done);
+    });
+  });
 });

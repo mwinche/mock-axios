@@ -2,6 +2,20 @@
 
 var BASE_URL_REGEX = /^[^\/]+:\/\/[^/]+/;
 
+function merge(obj1, obj2){
+  var obj = Object.keys(obj1).reduce(function(obj, key){
+    obj[key] = obj1[key];
+
+    return obj;
+  }, {});
+
+  return Object.keys(obj2).reduce(function(obj, key){
+    obj[key] = obj2[key];
+
+    return obj;
+  }, obj);
+}
+
 function deepContained(obj1, obj2){
   if(obj1 === obj2){
     return true;
@@ -211,6 +225,43 @@ module.exports = function(){
     return function wrap(arr) {
       return callback.apply(null, arr);
     };
+  };
+
+  api.axios.create = function create(initialConfig){
+    initialConfig = initialConfig || {};
+
+    var instance = {
+      request: function(config){
+        return api.axios(merge(initialConfig, config));
+      }
+    };
+
+    ['get', 'delete', 'head'].reduce(function(instance, method){
+      instance[method] = function(url, config){
+        config = config || {};
+        config.url = url;
+        config.method = method;
+
+        return api.axios(merge(initialConfig, config));
+      };
+
+      return instance;
+    }, instance);
+
+    ['post', 'put', 'patch'].reduce(function(instance, method){
+      instance[method] = function(url, data, config){
+        config = config || {};
+        config.url = url;
+        config.data = data;
+        config.method = method;
+
+        return api.axios(merge(initialConfig, config));
+      };
+
+      return instance;
+    }, instance);
+
+    return instance;
   };
 
   return api;
