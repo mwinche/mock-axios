@@ -375,16 +375,17 @@ describe('moxios', function(){
 
   describe('transformResponse', function(){
     it('should run all transforms on the provided value', function(done){
-      mock.when('/api/delete').return(5);
+      mock.when('/api/delete').return({data:5});
 
       verifyNotRejected(
         mock.axios.get('/api/delete', {
           transformResponse: [function(data){
-            return data * 2;
+            data.data *= 2;
+            return data;
           }]
         })
           .then(function(value){
-            expect(value).toBe(10);
+            expect(value).toEqual({data: 10});
             done();
           })
 
