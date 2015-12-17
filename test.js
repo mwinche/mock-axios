@@ -372,4 +372,45 @@ describe('moxios', function(){
       expect(sum).toBe(12);
     });
   });
+
+  describe('transformResponse', function(){
+    it('should run all transforms on the provided value', function(done){
+      mock.when('/api/delete').return(5);
+
+      verifyNotRejected(
+        mock.axios.get('/api/delete', {
+          transformResponse: [function(data){
+            return data * 2;
+          }]
+        })
+          .then(function(value){
+            expect(value).toBe(10);
+            done();
+          })
+
+        ,done);
+    });
+  });
+
+  describe('transformRequest', function(){
+    it('should transform the request before it tries to match them', function(done){
+      mock.when.post('/obj/insert', { count: 15 }).return(true);
+
+      verifyNotRejected(
+        mock.axios.post('/obj/insert', { count: 5 }, {
+          transformRequest: [
+            function(data){
+              data.count = data.count * 3;
+              return data;
+            }
+          ]
+        })
+          .then(function(value){
+            expect(value).toBe(true);
+            done();
+          })
+
+        ,done);
+    });
+  });
 });

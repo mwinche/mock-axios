@@ -9,6 +9,12 @@ function deepContained(obj1, obj2){
     return false;
   }
 
+  //If its an array or an object want to compare keys, otherwise
+  // straight equality should work
+  if(!Object.keys(obj1).length && typeof obj1 !== 'object'){
+    return obj1 === obj2;
+  }
+
   return Object.keys(obj1)
     .reduce(function(matches, key){
       return matches && deepContained(obj1[key], obj2[key]);
@@ -54,6 +60,12 @@ module.exports = function(){
       return api;
     },
     axios: function(config){
+      if(config.transformRequest){
+        config.data = config.transformRequest.reduce(function(data, transform){
+          return transform(data);
+        }, config.data);
+      }
+
       var result = conditions.reduce(function(result, conditionFN){
         return result || conditionFN(config);
       }, undefined);
@@ -63,6 +75,13 @@ module.exports = function(){
           message: "Request " + config.method + " " + config.url + " not handled",
           request: config
         };
+      }
+
+      if(config.transformResponse){
+        result = config.transformResponse
+          .reduce(function(result, transform){
+            return transform(result);
+          }, result);
       }
 
       //Wrap it in a promise just to be sure. Promise API guarantees that if
