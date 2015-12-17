@@ -414,4 +414,47 @@ describe('moxios', function(){
         ,done);
     });
   });
+
+  describe('params', function(){
+    it('should match properly', function(done){
+      mock.when.get('/api?ID=FOO&name=BAR').return(1);
+
+      var promises = [
+        mock.axios.get('/api', {params: {ID:'FOO', 'name': 'BAR'}}),
+        mock.axios.get('/api', {params: {'name': 'BAR', ID:'FOO'}}),
+        mock.axios.get('/api?ID=FOO&name=BAR'),
+        mock.axios.get('/api?ID=FOO', {params:{'name':'BAR'}})
+      ];
+
+      verifyNotRejected(
+        Promise.all(promises)
+          .then(function(values){
+            expect(values).toEqual([1,1,1,1]);
+            done();
+          })
+
+        ,done);
+    });
+  });
+
+  describe('baseURL', function(){
+    it('should match properly', function(done){
+      mock.when.get('http://domain/api').return(1);
+
+      var promises = [
+        mock.axios.get('http://domain/api'),
+        mock.axios.get('/api', {baseURL:'http://domain'}),
+        mock.axios.get('/api', {baseURL:'http://domain/'})
+      ];
+
+      verifyNotRejected(
+        Promise.all(promises)
+          .then(function(values){
+            expect(values).toEqual([1,1,1]);
+            done();
+          })
+
+        ,done);
+    });
+  });
 });

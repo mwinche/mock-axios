@@ -1,5 +1,7 @@
 'use strict';
 
+var BASE_URL_REGEX = /^[^\/]+:\/\/[^/]+/;
+
 function deepContained(obj1, obj2){
   if(obj1 === obj2){
     return true;
@@ -14,6 +16,9 @@ function deepContained(obj1, obj2){
   if(!Object.keys(obj1).length && typeof obj1 !== 'object'){
     return obj1 === obj2;
   }
+  else if(typeof obj1 === 'string'){
+    return obj1 === obj2;
+  }
 
   return Object.keys(obj1)
     .reduce(function(matches, key){
@@ -22,17 +27,63 @@ function deepContained(obj1, obj2){
 }
 
 function conditionFactory(expectedConfig, result){
+  expectedConfig = uniformConfig(expectedConfig);
+
   return function(actualConfig){
+    actualConfig = uniformConfig(actualConfig);
+
     if(!deepContained(expectedConfig, actualConfig)){
       return undefined;
     }
 
     if(typeof result === 'function'){
-      return result.call(undefined, actualConfig);
+      return result(actualConfig);
     }
 
     return result;
   };
+}
+
+function uniformConfig(config){
+  var url = config.url;
+  var baseURL = config.baseURL;
+  var params = config.params;
+
+  //If url is aboslute, this will extract the protocol and host until the '/'
+  //character which separates it from the path (does not include the '/')
+  var match = (BASE_URL_REGEX.exec(url) || [])[0];
+
+  baseURL = match || baseURL;
+
+  if(match){
+    //Will contain the path including the leading '/'
+    url = url.substr(match.length);
+  }
+
+  match = url.split('?')[1];
+
+  if(match){
+    url = url.substr(0, url.indexOf('?'));
+
+    match = match.split('&');
+    params = match.reduce(function(params, param){
+      var parts = param.split('=');
+
+      params[parts[0]] = parts[1];
+
+      return params;
+    }, params || {});
+  }
+
+  if(baseURL){
+    baseURL = (BASE_URL_REGEX.exec(baseURL) || [])[0];
+  }
+
+  config.url = url;
+  config.baseURL = baseURL;
+  config.params = params;
+
+  return config;
 }
 
 module.exports = function(){
