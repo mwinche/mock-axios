@@ -4,6 +4,7 @@
   "description": "Mock implementation of the popular axios library",
   "main": "index.js",
   "scripts": {
+    "precommit": "eslint index.js",
     "test": "jasmine && karma start",
     "test:watch": "karma start --autoWatch=true --singleRun=false"
   },
@@ -42,5 +43,10 @@
     "karma-sourcemap-loader": "0.3.6",
     "karma-webpack": "1.7.0",
     "webpack": "1.12.9"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run precommit"
+    }
   }
 }
