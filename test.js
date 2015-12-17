@@ -325,4 +325,20 @@ describe('moxios', function(){
       );
     });
   });
+
+  describe('reset method', function(){
+    it('should remove all conditions', function(){
+      mock.when('/home').return(true);
+
+      expect(function(){
+        mock.axios.get('/home');
+      }).not.toThrow();
+
+      mock.reset();
+
+      expect(function(){
+        mock.axios.get('/home');
+      }).toThrow();
+    });
+  });
 });

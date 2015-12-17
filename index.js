@@ -69,6 +69,9 @@ module.exports = function(){
       //`result` is a rejected promise, `Promise.resolve(result)` will reject
       //with the same value, likewise for resolved promises.
       return Promise.resolve(result);
+    },
+    reset: function(){
+      conditions.length = 0;
     }
   };
 
