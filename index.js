@@ -33,8 +33,23 @@ module.exports = function(){
   var conditions = [];
 
   var api = {
-    when: function(conditionFN){
-      conditions.push(conditionFN);
+    when: function(condition, data, config){
+      if(typeof condition === 'function'){
+        conditions.push(condition);
+      }
+      else{
+        var config = config || {};
+        config.data = data || config.data;
+        config.url = condition;
+
+        return {
+          return: function(result){
+            api.when(conditionFactory(config, result));
+
+            return api;
+          }
+        };
+      }
 
       return api;
     },
@@ -70,12 +85,16 @@ module.exports = function(){
   }, api.axios);
 
   ['get', 'delete', 'head'].reduce(function(when, method){
-    when[method] = function(url, expectedConfig, result){
+    when[method] = function(url, expectedConfig){
       expectedConfig = expectedConfig || {};
       expectedConfig.url = url;
       expectedConfig.method = method;
 
-      when(conditionFactory(expectedConfig, result));
+      return {
+        return: function(result){
+          when(conditionFactory(expectedConfig, result));
+        }
+      };
     };
 
     return when;
@@ -85,7 +104,7 @@ module.exports = function(){
     axios[method] = function(url, data, config){
       config = config || {};
       config.url = url;
-      config.data = data;
+      config.data = data || config.data;
       config.method = method;
 
       return axios(config);
@@ -94,14 +113,18 @@ module.exports = function(){
     return axios;
   }, api.axios);
 
-  ['get', 'delete', 'head'].reduce(function(when, method){
-    when[method] = function(url, data, expectedConfig, result){
+  ['post', 'put', 'patch'].reduce(function(when, method){
+    when[method] = function(url, data, expectedConfig){
       expectedConfig = expectedConfig || {};
       expectedConfig.url = url;
-      expectedConfig.data = data;
+      expectedConfig.data = data || config.data;
       expectedConfig.method = method;
 
-      when(conditionFactory(expectedConfig, result));
+      return {
+        return: function(result){
+          when(conditionFactory(expectedConfig, result));
+        }
+      };
     };
 
     return when;
