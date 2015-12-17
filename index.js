@@ -2,6 +2,27 @@
 
 var BASE_URL_REGEX = /^[^\/]+:\/\/[^/]+/;
 
+function delegate(instance, method, fn, hasData){
+  instance[method] = hasData ?
+    function(url, data, config){
+      config = config || {};
+      config.url = url;
+      config.data = data;
+      config.method = method;
+
+      return fn(config);
+    } :
+    function(url, config){
+      config = config || {};
+      config.url = url;
+      config.method = method;
+
+      return fn(config);
+    };
+
+  return instance;
+}
+
 function merge(obj1, obj2){
   var obj = Object.keys(obj1).reduce(function(obj, key){
     obj[key] = obj1[key];
@@ -160,15 +181,7 @@ module.exports = function(){
   };
 
   ['get', 'delete', 'head'].reduce(function(axios, method){
-    axios[method] = function(url, config){
-      config = config || {};
-      config.url = url;
-      config.method = method;
-
-      return axios(config);
-    };
-
-    return axios;
+    return delegate(axios, method, axios, false);
   }, api.axios);
 
   ['get', 'delete', 'head'].reduce(function(when, method){
@@ -188,16 +201,7 @@ module.exports = function(){
   }, api.when);
 
   ['post', 'put', 'patch'].reduce(function(axios, method){
-    axios[method] = function(url, data, config){
-      config = config || {};
-      config.url = url;
-      config.data = data || config.data;
-      config.method = method;
-
-      return axios(config);
-    };
-
-    return axios;
+    return delegate(axios, method, axios, true);
   }, api.axios);
 
   ['post', 'put', 'patch'].reduce(function(when, method){
@@ -237,28 +241,11 @@ module.exports = function(){
     };
 
     ['get', 'delete', 'head'].reduce(function(instance, method){
-      instance[method] = function(url, config){
-        config = config || {};
-        config.url = url;
-        config.method = method;
-
-        return api.axios(merge(initialConfig, config));
-      };
-
-      return instance;
+      return delegate(instance, method, instance.request, false);
     }, instance);
 
     ['post', 'put', 'patch'].reduce(function(instance, method){
-      instance[method] = function(url, data, config){
-        config = config || {};
-        config.url = url;
-        config.data = data;
-        config.method = method;
-
-        return api.axios(merge(initialConfig, config));
-      };
-
-      return instance;
+      return delegate(instance, method, instance.request, true);
     }, instance);
 
     return instance;
