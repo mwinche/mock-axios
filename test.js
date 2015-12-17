@@ -341,4 +341,35 @@ describe('moxios', function(){
       }).toThrow();
     });
   });
+
+  describe('axios.all method', function(){
+    it('should function like Promise.all', function(done){
+      var promises = [
+        Promise.resolve(1),
+        Promise.resolve(2),
+        Promise.resolve(3)
+      ];
+
+      verifyNotRejected(
+        mock.axios.all(promises)
+          .then(function(values){
+            expect(values).toEqual([1,2,3]);
+            done();
+          })
+        ,done);
+    });
+  });
+
+  describe('axios.spread method', function(){
+    it('should function like spread', function(){
+      var sum;
+      function add(a,b,c){
+        sum = a + b + c;
+      }
+
+      mock.axios.spread(add)([3,4,5]);
+
+      expect(sum).toBe(12);
+    });
+  });
 });

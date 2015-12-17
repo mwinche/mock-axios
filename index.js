@@ -133,5 +133,15 @@ module.exports = function(){
     return when;
   }, api.when);
 
+  api.axios.all = function all(promises) {
+    return Promise.all(promises);
+  };
+
+  api.axios.spread = function spread(callback) {
+    return function wrap(arr) {
+      return callback.apply(null, arr);
+    };
+  };
+
   return api;
 };
