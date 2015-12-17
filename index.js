@@ -121,7 +121,7 @@ function uniformConfig(config){
   return config;
 }
 
-module.exports = function(){
+module.exports = (function(){
   var conditions = [];
 
   var api = {
@@ -252,4 +252,4 @@ module.exports = function(){
   };
 
   return api;
-};
+})();

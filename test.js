@@ -9,48 +9,46 @@ function verifyNotRejected(promise, done){
 }
 
 describe('moxios', function(){
-  var mock;
-
   beforeEach(function(){
-    mock = moxios();
+    moxios.reset();
   });
 
   describe('axios method', function(){
     it('throw if you use it with no conditions', function(){
       expect(function(){
-        mock.axios.get('/url');
+        moxios.axios.get('/url');
       }).toThrow();
     });
 
     it('should always return a promise if conditions are met', function(){
-      mock.when(function(){
+      moxios.when(function(){
         return 'TRUE';
       });
 
-      expect(mock.axios('/url')).toEqual(jasmine.any(Promise));
-      expect(mock.axios.get('/url')).toEqual(jasmine.any(Promise));
-      expect(mock.axios.delete('/url')).toEqual(jasmine.any(Promise));
-      expect(mock.axios.head('/url')).toEqual(jasmine.any(Promise));
-      expect(mock.axios.post('/url', {})).toEqual(jasmine.any(Promise));
-      expect(mock.axios.put('/url', {})).toEqual(jasmine.any(Promise));
-      expect(mock.axios.patch('/url', {})).toEqual(jasmine.any(Promise));
+      expect(moxios.axios('/url')).toEqual(jasmine.any(Promise));
+      expect(moxios.axios.get('/url')).toEqual(jasmine.any(Promise));
+      expect(moxios.axios.delete('/url')).toEqual(jasmine.any(Promise));
+      expect(moxios.axios.head('/url')).toEqual(jasmine.any(Promise));
+      expect(moxios.axios.post('/url', {})).toEqual(jasmine.any(Promise));
+      expect(moxios.axios.put('/url', {})).toEqual(jasmine.any(Promise));
+      expect(moxios.axios.patch('/url', {})).toEqual(jasmine.any(Promise));
     });
   });
 
   describe('when method', function(){
     it('should return a reference to itself', function(){
-      expect(mock.when(function(){})).toBe(mock);
+      expect(moxios.when(function(){})).toBe(moxios);
     });
 
     it('should allow registering conditions which match of off .axios', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios({url:'/url'})
+        moxios.axios({url:'/url'})
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -60,14 +58,14 @@ describe('moxios', function(){
     });
 
     it('should allow registering conditions which match of off .axios.get', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios.get('/url')
+        moxios.axios.get('/url')
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -77,14 +75,14 @@ describe('moxios', function(){
     });
 
     it('should allow registering conditions which match of off .axios.delete', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios.delete('/url')
+        moxios.axios.delete('/url')
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -94,14 +92,14 @@ describe('moxios', function(){
     });
 
     it('should allow registering conditions which match of off .axios.head', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios.head('/url')
+        moxios.axios.head('/url')
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -111,14 +109,14 @@ describe('moxios', function(){
     });
 
     it('should allow registering conditions which match of off .axios.post', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios.post('/url', {})
+        moxios.axios.post('/url', {})
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -128,14 +126,14 @@ describe('moxios', function(){
     });
 
     it('should allow registering conditions which match of off .axios.put', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios.put('/url', {})
+        moxios.axios.put('/url', {})
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -145,14 +143,14 @@ describe('moxios', function(){
     });
 
     it('should allow registering conditions which match of off .axios.patch', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         if(config.url === '/url'){
           return 'SUCCESS';
         }
       });
 
       verifyNotRejected(
-        mock.axios.patch('/url', {})
+        moxios.axios.patch('/url', {})
           .then(function(value){
             expect(value).toBe('SUCCESS');
             done();
@@ -162,7 +160,7 @@ describe('moxios', function(){
     });
 
     it('should fall through to secondary conditions', function(done){
-      mock
+      moxios
         .when(function(config){
           if(config.url === '/url'){
             return 'SUCCESS';
@@ -175,7 +173,7 @@ describe('moxios', function(){
         });
 
       verifyNotRejected(
-        mock.axios.get('/test')
+        moxios.axios.get('/test')
           .then(function(value){
             expect(value).toBe('TEST');
             done();
@@ -185,10 +183,10 @@ describe('moxios', function(){
     });
 
     it('should have a shorthand version', function(done){
-      mock.when('/endpoint').return('DATA');
+      moxios.when('/endpoint').return('DATA');
 
       verifyNotRejected(
-        mock.axios.post('/endpoint')
+        moxios.axios.post('/endpoint')
           .then(function(value){
             expect(value).toBe('DATA');
             done();
@@ -198,10 +196,10 @@ describe('moxios', function(){
     });
 
     it('should have a shorthand version that takes data', function(done){
-      mock.when('/endpoint', {data:'yup'}).return('DATA');
+      moxios.when('/endpoint', {data:'yup'}).return('DATA');
 
       verifyNotRejected(
-        mock.axios.post('/endpoint', {data:'yup'})
+        moxios.axios.post('/endpoint', {data:'yup'})
           .then(function(value){
             expect(value).toBe('DATA');
             done();
@@ -211,10 +209,10 @@ describe('moxios', function(){
     });
 
     it('should have a shorthand version that takes data and config', function(done){
-      mock.when('/endpoint', {data:'yup'}, {headers:{}}).return('DATA');
+      moxios.when('/endpoint', {data:'yup'}, {headers:{}}).return('DATA');
 
       verifyNotRejected(
-        mock.axios.post('/endpoint', {data:'yup'}, {headers:{}})
+        moxios.axios.post('/endpoint', {data:'yup'}, {headers:{}})
           .then(function(value){
             expect(value).toBe('DATA');
             done();
@@ -224,18 +222,18 @@ describe('moxios', function(){
     });
 
     it('should have a shorthand version eventually returns a reference to itself', function(){
-      var actual = mock.when('/endpoint', {data:'yup'}, {headers:{}}).return('DATA');
+      var actual = moxios.when('/endpoint', {data:'yup'}, {headers:{}}).return('DATA');
 
-      expect(actual).toBe(mock);
+      expect(actual).toBe(moxios);
     });
   });
 
   describe('when.get method', function(){
     it('should be a shorthand for checking the method', function(done){
-      mock.when.get('/api').return(true);
+      moxios.when.get('/api').return(true);
 
       verifyNotRejected(
-        mock.axios.get('/api')
+        moxios.axios.get('/api')
           .then(function(value){
             expect(value).toBe(true);
             done();
@@ -248,10 +246,10 @@ describe('moxios', function(){
 
   describe('when.delete method', function(){
     it('should be a shorthand for checking the method', function(done){
-      mock.when.delete('/api').return(true);
+      moxios.when.delete('/api').return(true);
 
       verifyNotRejected(
-        mock.axios.delete('/api')
+        moxios.axios.delete('/api')
           .then(function(value){
             expect(value).toBe(true);
             done();
@@ -264,10 +262,10 @@ describe('moxios', function(){
 
   describe('when.head method', function(){
     it('should be a shorthand for checking the method', function(done){
-      mock.when.head('/api').return(true);
+      moxios.when.head('/api').return(true);
 
       verifyNotRejected(
-        mock.axios.head('/api')
+        moxios.axios.head('/api')
           .then(function(value){
             expect(value).toBe(true);
             done();
@@ -280,10 +278,10 @@ describe('moxios', function(){
 
   describe('when.post method', function(){
     it('should be a shorthand for checking the method', function(done){
-      mock.when.post('/api', {stuff:'things'}).return(true);
+      moxios.when.post('/api', {stuff:'things'}).return(true);
 
       verifyNotRejected(
-        mock.axios.post('/api', {stuff:'things'})
+        moxios.axios.post('/api', {stuff:'things'})
           .then(function(value){
             expect(value).toBe(true);
             done();
@@ -296,10 +294,10 @@ describe('moxios', function(){
 
   describe('when.put method', function(){
     it('should be a shorthand for checking the method', function(done){
-      mock.when.put('/api', {stuff:'things'}).return(true);
+      moxios.when.put('/api', {stuff:'things'}).return(true);
 
       verifyNotRejected(
-        mock.axios.put('/api', {stuff:'things'})
+        moxios.axios.put('/api', {stuff:'things'})
           .then(function(value){
             expect(value).toBe(true);
             done();
@@ -312,10 +310,10 @@ describe('moxios', function(){
 
   describe('when.patch method', function(){
     it('should be a shorthand for checking the method', function(done){
-      mock.when.patch('/api', {stuff:'things'}).return(true);
+      moxios.when.patch('/api', {stuff:'things'}).return(true);
 
       verifyNotRejected(
-        mock.axios.patch('/api', {stuff:'things'})
+        moxios.axios.patch('/api', {stuff:'things'})
           .then(function(value){
             expect(value).toBe(true);
             done();
@@ -328,16 +326,16 @@ describe('moxios', function(){
 
   describe('reset method', function(){
     it('should remove all conditions', function(){
-      mock.when('/home').return(true);
+      moxios.when('/home').return(true);
 
       expect(function(){
-        mock.axios.get('/home');
+        moxios.axios.get('/home');
       }).not.toThrow();
 
-      mock.reset();
+      moxios.reset();
 
       expect(function(){
-        mock.axios.get('/home');
+        moxios.axios.get('/home');
       }).toThrow();
     });
   });
@@ -351,7 +349,7 @@ describe('moxios', function(){
       ];
 
       verifyNotRejected(
-        mock.axios.all(promises)
+        moxios.axios.all(promises)
           .then(function(values){
             expect(values).toEqual([1,2,3]);
             done();
@@ -367,7 +365,7 @@ describe('moxios', function(){
         sum = a + b + c;
       }
 
-      mock.axios.spread(add)([3,4,5]);
+      moxios.axios.spread(add)([3,4,5]);
 
       expect(sum).toBe(12);
     });
@@ -375,10 +373,10 @@ describe('moxios', function(){
 
   describe('transformResponse', function(){
     it('should run all transforms on the provided value', function(done){
-      mock.when('/api/delete').return({data:5});
+      moxios.when('/api/delete').return({data:5});
 
       verifyNotRejected(
-        mock.axios.get('/api/delete', {
+        moxios.axios.get('/api/delete', {
           transformResponse: [function(data){
             data.data *= 2;
             return data;
@@ -395,10 +393,10 @@ describe('moxios', function(){
 
   describe('transformRequest', function(){
     it('should transform the request before it tries to match them', function(done){
-      mock.when.post('/obj/insert', { count: 15 }).return(true);
+      moxios.when.post('/obj/insert', { count: 15 }).return(true);
 
       verifyNotRejected(
-        mock.axios.post('/obj/insert', { count: 5 }, {
+        moxios.axios.post('/obj/insert', { count: 5 }, {
           transformRequest: [
             function(data){
               data.count = data.count * 3;
@@ -417,13 +415,13 @@ describe('moxios', function(){
 
   describe('params', function(){
     it('should match properly', function(done){
-      mock.when.get('/api?ID=FOO&name=BAR').return(1);
+      moxios.when.get('/api?ID=FOO&name=BAR').return(1);
 
       var promises = [
-        mock.axios.get('/api', {params: {ID:'FOO', 'name': 'BAR'}}),
-        mock.axios.get('/api', {params: {'name': 'BAR', ID:'FOO'}}),
-        mock.axios.get('/api?ID=FOO&name=BAR'),
-        mock.axios.get('/api?ID=FOO', {params:{'name':'BAR'}})
+        moxios.axios.get('/api', {params: {ID:'FOO', 'name': 'BAR'}}),
+        moxios.axios.get('/api', {params: {'name': 'BAR', ID:'FOO'}}),
+        moxios.axios.get('/api?ID=FOO&name=BAR'),
+        moxios.axios.get('/api?ID=FOO', {params:{'name':'BAR'}})
       ];
 
       verifyNotRejected(
@@ -439,12 +437,12 @@ describe('moxios', function(){
 
   describe('baseURL', function(){
     it('should match properly', function(done){
-      mock.when.get('http://domain/api').return(1);
+      moxios.when.get('http://domain/api').return(1);
 
       var promises = [
-        mock.axios.get('http://domain/api'),
-        mock.axios.get('/api', {baseURL:'http://domain'}),
-        mock.axios.get('/api', {baseURL:'http://domain/'})
+        moxios.axios.get('http://domain/api'),
+        moxios.axios.get('/api', {baseURL:'http://domain'}),
+        moxios.axios.get('/api', {baseURL:'http://domain/'})
       ];
 
       verifyNotRejected(
@@ -460,9 +458,9 @@ describe('moxios', function(){
 
   describe('instance support', function(){
     it('should match against instances as well', function(done){
-      mock.when.get('/url').return('foo');
+      moxios.when.get('/url').return('foo');
 
-      var instance = mock.axios.create();
+      var instance = moxios.axios.create();
 
       verifyNotRejected(
         instance.get('/url')
@@ -475,11 +473,11 @@ describe('moxios', function(){
     });
 
     it('should take a config at instance creation', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         return config;
       });
 
-      var instance = mock.axios.create({foo:'bar'});
+      var instance = moxios.axios.create({foo:'bar'});
 
       verifyNotRejected(
         instance.get('/')
@@ -492,11 +490,11 @@ describe('moxios', function(){
     });
 
     it('should work for all instance methods', function(done){
-      mock.when(function(config){
+      moxios.when(function(config){
         return config.method;
       });
 
-      var instance = mock.axios.create();
+      var instance = moxios.axios.create();
 
       var promises = [
         instance.request({url:'/', method:'get'}),
