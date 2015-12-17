@@ -170,10 +170,14 @@ module.exports = (function(){
           }, result);
       }
 
+      //Reject it if we get an error status
+      var promiseCast = (result && result.status && (result.status < 200 || result.status > 200)) ?
+        Promise.reject : Promise.resolve;
+
       //Wrap it in a promise just to be sure. Promise API guarantees that if
       //`result` is a rejected promise, `Promise.resolve(result)` will reject
       //with the same value, likewise for resolved promises.
-      return Promise.resolve(result);
+      return promiseCast(result);
     },
     reset: function(){
       conditions.length = 0;

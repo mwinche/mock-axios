@@ -524,4 +524,22 @@ describe('moxios', function(){
         ,done);
     });
   });
+
+  describe('error statuses', function(){
+    it('should handle them', function(done){
+      moxios.when(function(){
+        return {status:400};
+      });
+
+      moxios.axios.get('/')
+        .then(function(){
+          expect('This should not get hit').not.toBeDefined();
+          done();
+        })
+        .catch(function(response){
+          expect(response.status).toBe(400);
+          done();
+        });
+    });
+  });
 });
